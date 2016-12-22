@@ -20,9 +20,7 @@
 % setting it as a parameter.
 % (TBT) 22_DEC_2016 Changed microscope functions names, added documentation
 % and exception handling.
-%   TODO: See if the import statement in loadMicroscope can be called 
-%   inside a function or if it should be run as a script instead.
-
+%   See if loa
 % %%%%%%%%%%%%%%%
 % DATE: 2016-DEC-19
 %% Declare constants
