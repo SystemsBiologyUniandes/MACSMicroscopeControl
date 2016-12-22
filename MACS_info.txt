@@ -1,0 +1,9 @@
+User	Luis
+Media	M9
+Strain	JAC
+Positions	1
+Objective Magnification (10, 40, 60, 100)x	100
+Lens Magnification (1 or 1.5)x	1.5
+Binning	2
+cMount	0.7
+Camera Pixel Size (um)	0.0645
