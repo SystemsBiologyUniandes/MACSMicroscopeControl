@@ -1,6 +1,5 @@
 %% First: initialize communication between hardware components and computer
 % Initalize Micro-manager
-
 % MACS ACDQUISITION PROGRAM
 % AUTHOR:
 % Juan Arias   -- ju-aria1@uniandes.edu.co
@@ -20,11 +19,16 @@
 % setting it as a parameter.
 % (TBT) 22_DEC_2016 Changed microscope functions names, added documentation
 % and exception handling.
-%   TODO: See if the import statement in loadMicroscope can be called 
+%   TODO: Check if the import statement in loadMicroscope can be called 
 %   inside a function or if it should be run as a script instead.
-
+%   TODO: For setStageSpeed check if val must be integer or can be float
+%   between 1 and 9.
+% (TBT) 22_DEC_2016 Changed the prompt setup for the experiment info and
+% the directory creation format to have less subdirectories.
+%   TODO: Check if there is a problem having just one position and not ask
+%   for it.
 % %%%%%%%%%%%%%%%
-% DATE: 2016-DEC-19
+% DATE: 2016-DEC-22
 %% Declare constants
 %TODO
 %DEFINE TIME BETWEEN SNAPS AND USE IT TO DEFINE SNAPS TIMES, DECIDE IF IN
@@ -52,68 +56,10 @@ setEpiShutter(0);
 SetPfs(1);
 %% Initialize the NI-DAQ board and the 10 of 12 pins available
 loadDaq;
-%% MACS FILE INFO about experiment
+%% MACS FILE INFO about experiment, Read position list and create directory
 setExperimentInfo;
-%% MULTIPLE POSITIONS
-
-global M1
-
-% Read the position list
-Position = M.totalPositions;
-M.rootDir=['C:\Users\Juan Arias\Desktop\MACS\Position List (DO NOT DELETE)\'];
-M1 = readPositionList9(M);
-%M = readPositionList10(M);
-M1.position(1) %check if the position list reading worked correctl
-
-% Create directories for Image Storage
-%TODO PROMPT TO DEFINE NAME OF THE CHANNELS, AND NUMBER OF CHANNELS IN
-%FILE_INFO
-for i=1:Position
-    %TODO CHECK DIRECTORY HIERARCHY AND SELECT SEGMENTATION AND SIGNAL
-    %1,2,3, ETC
-    mkdirRFP = mkdir(['C:\Users\Juan Arias\Desktop\MACS\', M.user, '\', M.date, '\',M.media,'\',M.Strain,'\POS',num2str(i),'\RFP\']); %folder for the images RFP
-    mkdirGFP = mkdir(['C:\Users\Juan Arias\Desktop\MACS\', M.user, '\', M.date, '\',M.media,'\',M.Strain,'\POS',num2str(i),'\GFP\']);%folder for the images GFP
-    %mkdirBF = mkdir(['C:\Users\Juan Arias\Desktop\MM\', M.user, '\', M.date, '\',M.experimentName,'\POS',num2str(i),'\BF\']);%folder for the images BFP
-
-end
-
 %% GENERAL SETTINGS BEFORE START SNAPPING
-
-%LIGHTPATH
-%mmc.setProperty('TILightPath','Label','1-Eye100') % Eye LightPath
-mmc.setProperty('TILightPath','Label','2-Left100'); % Hamamatsu Camera LightPath
-%mmc.setProperty('TILightPath','Label','3-Right100'); % Andor Camera LightPath
-
-
-%STAGE SPEED 
-mmc.setProperty('TIXYDrive','SpeedX',1); %Stage Speed in X default is 1 (max), 9 is min.
-mmc.setProperty('TIXYDrive','SpeedY',1); %Stage Speed in Y default is 1 (max), 9 is min.
-%mmc.setProperty('TIXYDrive','SpeedY',9) %Stage Speed in Z default is 1 (max), 9 is min.
-% mmc.setXYPosition('TIXYDrive',0,0)
-
-%INFORMATION
-% mmc.getXPosition('TIXYDrive') 
-% mmc.getYPosition('TIXYDrive') 
-% mmc.setPosition('TIXYDrive',M.position(1))
-
-%OBJECTIVE
-%mmc.setProperty('TINosePiece','Label','3-Plan Fluor 10x NA 0.30 Dry'); %10x Objective
-
-%mmc.setProperty('TINosePiece','Label','6-Apo TIRF 100x NA 1.49 Oil'); %100x Objective
-
-%CONDENSER
-
-%mmc.setProperty('TICondenserCassette','Label','2-DICN1'); %10x Objective
-mmc.setProperty('TICondenserCassette','Label','3-DICN2'); %100x Objective
-
-% Turn off this warning "Warning: Image is too big to fit on screen; displaying at 33% "
-% To set the warning state, you must first know the message identifier for the one warning you want to enable. 
-% Query the last warning to acquire the identifier.  For example: 
-% warnStruct = warning('query', 'last');
-% messageID = warnStruct.identifier
-% messageID =
-%    MATLAB:concatenation:integerInteraction
-warning('off', 'Images:initSize:adjustingMag');
+setMicroscopePropertiesBeforeSnap;
 %% Prepare MACS for snapping
 preSnapping(macs, T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
 %% MACSing with snapping images
@@ -122,8 +68,8 @@ preSnapping(macs, T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
 %preSnapping(macs, T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
 
 M.t0 = clock;
-
-for i=1:50
+N_SNAPS = 50;
+for i=1:N_SNAPS
     tic
     %Moving stage
     %pn = 1;
