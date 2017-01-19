@@ -37,7 +37,7 @@ declareConstants;
 %% Microscope CORE
 config_filename_hama = 'C:\Program Files (x86)\Micro-Manager-1.4\MMConfigHamamatsu_May_24_2016.cfg';
 config_filename_andor = 'C:\Program Files (x86)\Micro-Manager-1.4\MMConfigAndor_August_25_2015.cfg';
-loadMicroscopeHama(config_filename_hama);
+loadMicroscope(config_filename_hama);
 %% Unload microscope
 unloadMicroscope;
 %% Set all microscope properties

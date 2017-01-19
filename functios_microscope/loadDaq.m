@@ -15,6 +15,7 @@
 % example.
 
 daqreset;
+global macs;
 macs = daq.createSession('ni');
 %daq.getDevices;
 pumpset1 = addDigitalChannel(macs, 'dev1', 'Port0/Line0:7', 'OutputOnly');
