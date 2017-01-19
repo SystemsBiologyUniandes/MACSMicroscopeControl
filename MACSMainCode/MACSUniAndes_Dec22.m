@@ -72,9 +72,11 @@ N_SNAPS = 50;
 for i=1:N_SNAPS
     tic
     %Moving stage
-    %pn = 1;
-    for pn = 1:Position
-        
+    % TODO: FIX ONLY ON THE UNIQUE POSITION
+    % TODO: SEE IF THAT IS THE ISSUE, CHANGING THE PFS AND POSITION BEFORE
+    % EACH SNAP COULD BE CHANGING THE FOCUS AND THAT MAY BE THE CAUSE OF
+    % THE PROBLEM WE WERE HAVING
+    pn = 1;
     X_n = M1.position(pn).X{1};
     Y_n = M1.position(pn).Y{1};
     mmc.setXYPosition('TIXYDrive', X_n, Y_n)
@@ -93,7 +95,7 @@ for i=1:N_SNAPS
     
     %mmc.waitForDevice('TIPFSStatus')
     
-    macsingSnap( macs, T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING )
+    macsingSnap( macs, T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING );
      
    %  mmc.enableContinuousFocus(1)
       
@@ -104,8 +106,7 @@ for i=1:N_SNAPS
     M.rootDirRFP = ['C:\Users\Juan Arias\Desktop\MACS\', M.user, '\', M.date, '\',M.experimentName,'\POS',num2str(pn),'\RFP\']; % change the directory
     M.imageDirRFP = [M.rootDirRFP];
     
-    %     for i=1:5 % this is for focus adjustment only  
-        
+    %     for i=1:5 % this is for focus adjustment only
     mmc.setProperty('TIFilterBlock1','Label','4-G-2Ec') % Set RED Filter
     mmc.setProperty('TIEpiShutter','State','1') % Open Epi Shutter
     %TODO SUPERSEGGER NAME
@@ -184,7 +185,6 @@ for i=1:N_SNAPS
     x=2;
     %x = (M.TimeBetweenSnaps*60-toc);
     pause(x); 
-    end
 end
 ptToW2(macs, T_WASTE_FINAL);
 allOff(macs);
