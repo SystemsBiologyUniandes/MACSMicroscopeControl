@@ -1,3 +1,8 @@
+% SETMICROSCOPEPROPERTIESBEFORESNAP Set the microscope properties just
+% before start snapping.
+%   SETMICROSCOPEPROPERTIESBEFORESNAP Set the microscope properties as
+%   desired: The light path, the stage speed and the condenser. Turns off an emergent warning. 
+
 %LIGHTPATH
 %setLightPath('Eye');
 setLightPath('Hamamatsu');

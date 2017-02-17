@@ -1,4 +1,4 @@
-function setEPIShutter( val )
+function setEpiShutter( val )
 % SETEPISHUTTER Set the EPI shutter status.
 %   SETEPISHUTTER(val) Turns the EPI shutter on or off if val == 1 or val
 %   == 0, respectively.

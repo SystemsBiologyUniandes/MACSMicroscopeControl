@@ -2,9 +2,7 @@ function setStageSpeed(val)
 % SETSTAGESPEED Set the speed of the stage.
 %   SETSTAGESPEED(val) Set the speed of the stage according to the value of
 %   val. Stage speed in X and Y default is 1 (max), 9 is min.
-%   Throws an error if val is not between 1 and 9
-%   correct values are 'Eye', 'Hamamatsu' and 'Andor' (case insensitive).
-%   Throws error if other string is used.
+%   Throws an error if val is not an integer between 1 and 9
     global mmc;
     if ismember(val,1:9)
         mmc.setProperty('TIXYDrive','SpeedX',val); 

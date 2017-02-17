@@ -21,7 +21,7 @@ function setFilter(val)
     elseif strcmpi(val,'89000')
         mmc.setProperty('TIFilterBlock1','Label','5-89000'); % Set 89000
     else
-        error('Invalid filter');
+        error('Invalid filter, the valid filters are Analy, UV, Blue, Green and 89000');
     end
 end
 

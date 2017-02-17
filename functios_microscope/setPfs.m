@@ -1,6 +1,6 @@
 function setPfs(val)
 % SETPFS Set the perfect focus status.
-%   SETPFS(val) Turns the perfect focus shutter on or off if val == 1 or 
+%   SETPFS(val) Turns the perfect focus on or off if val == 1 or 
 %   val == 0, respectively.
 %   Throws error if other value is used.
     global mmc

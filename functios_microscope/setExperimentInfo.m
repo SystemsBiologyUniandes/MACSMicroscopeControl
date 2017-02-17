@@ -4,21 +4,28 @@
 %   experimentInfo_'date'_'user'.txt.
 global M;
 
-labels = {'User','Media','Strain','Positions','Objective Magnification (10, 40, 60, 100)x','Lens Magnification (1 or 1.5)x', 'Binning'};
-default_answer = {'Luis', 'M5', 'JAC51-0','1', '100','1.5','2'};
-output_prompt = inputdlg(labels,'Experiment Info', [1 30; 1 30; 1 30; 1 30 ; 1 30; 1 30; 1 30], default_answer); 
+%For multiple positions
+%labels = {'User','Media','Strain','Positions','Objective Magnification (10, 40, 60, 100)x','Lens Magnification (1 or 1.5)x', 'Binning'};
+%default_answer = {'Luis', 'M5', 'JAC51-0','1', '100','1.5','2'};
+%output_prompt = inputdlg(labels,'Experiment Info', [1 30; 1 30; 1 30; 1 30 ; 1 30; 1 30; 1 30], default_answer); 
+
+labels = {'User','Media (e.g. M3)','Strain (e.g. JAC33-12)','Objective Magnification (10, 40, 60, 100)x','Lens Magnification (1 or 1.5)x', 'Binning'};
+default_answer = {'Luis', 'M3', 'JAC33-175', '100','1.5','2'};
+output_prompt = inputdlg(labels,'Experiment Info', [1 30; 1 30; 1 30 ; 1 30; 1 30; 1 30], default_answer); 
          
 M.date = datestr(datenum(date),'yyyymmdd');
 M.user = cell2mat(output_prompt(1));
 M.media = cell2mat(output_prompt(2));
 M.strain = cell2mat(output_prompt(3));
-M.totalPositions = str2double(cell2mat(output_prompt(4)));
-
+%For multiple positions
+%M.totalPositions = str2double(cell2mat(output_prompt(4)));
+M.totalPositions = 1;
 cMount = 0.7;
 cam_pixel_size = 0.0645;
 
-%Info file
-output_filename = strcat('experimentInfo_',M.date,'_',M.user,'.txt');
+%Info file saving
+system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/';
+output_filename = strcat(system_prefix, 'experimentInfo_',M.date,'_',M.user,'_', M.strain,'.txt');
 output_file = fopen(output_filename,'w');
 output_format = '%s\t%s\n';
 
@@ -36,7 +43,7 @@ open(output_filename);
 global M1;
 % Read the position list
 Position = M.totalPositions;
-M.rootDir=['C:\Users\Juan Arias\Desktop\MACS\Position List (DO NOT DELETE)\'];
+M.rootDir='C:\Users\Juan Arias\Desktop\MACS\Position List (DO NOT DELETE)\';
 M1 = readPositionList9(M);
 %M = readPositionList10(M);
 M1.position(1) %check if the position list reading worked correctly
@@ -57,8 +64,6 @@ M1.position(1) %check if the position list reading worked correctly
 %end
 
 % Creates directory for the images
-system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/';
-prefix = [system_prefix, M.user, M.date, M.media, M.strain, '/'];
+global prefix;
+prefix = [system_prefix, M.user,'/',M.date,'-',M.media, '-', M.strain, '/'];
 mkdir_message = mkdir(prefix);
-
-
