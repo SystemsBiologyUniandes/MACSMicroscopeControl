@@ -72,7 +72,7 @@
 %       t_rfp_exp, t_gfp_snap, t_gfp_exp with the time for each rfp and gfp
 %       snap from the beginning of the experiment (exp) and from the
 %       beginning of the current snap series (snap). The format is
-%       mm-ss-fff for snapdata and in minutoes for snapanalysis.
+%       mm-ss-fff for snapdata and in 
 %% DATE: 2017-FEB-17
 %% Declare constants
 %TODO
