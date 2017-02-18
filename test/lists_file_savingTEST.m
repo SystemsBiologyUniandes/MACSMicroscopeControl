@@ -1,63 +1,56 @@
 setExperimentInfoTEST;
 
-t_list_friendly = {};
-t_list_analysis = {};
+filename_tf = [prefix, M.time,'_',M.media, '_', M.strain,'_tfriendly.csv'];
+filename_ta = [prefix, M.time,'_',M.media, '_', M.strain,'_tanalysis.csv'];
 
-filename_tlist = [prefix, M.time,'_',M.media, '_', M.strain,'_tdata.csv'];
-filename_tlist_analysis = [prefix, M.time,'_',M.media, '_', M.strain,'_tanalysis.csv'];
+file_tf = fopen(filename_tf, 'w'); % times in a friendly format (mm-ss-fff)
+file_ta = fopen(filename_ta, 'w'); % times for analysis (mins)
 
-f_tlist = fopen(filename_tlist, 'w');
-f_tlist_analysis = fopen(filename_tlist_analysis,'w');
+t_header = {'t_gc_pt_i', 't_gc_pt_f', 't_snaps_i', 't_snaps_f'};
 
-t_list_header = {'t_gc_to_pt_i', 't_gc_to_pt_f', 't_snaps_i', 't_snaps_f'};
+fprintf(file_tf, '%s,', t_header{1:end-1});
+fprintf(file_tf, '%s\n', t_header{end});
 
-fprintf(f_tlist, '%s,', t_list_header{1:end-1});
-fprintf(f_tlist, '%s\n', t_list_header{end});
-
-fprintf(f_tlist_analysis, '%s,', t_list_header{1:end-1});
-fprintf(f_tlist_analysis, '%s\n', t_list_header{end});
+fprintf(file_ta, '%s,', t_header{1:end-1});
+fprintf(file_ta, '%s\n', t_header{end});
 %% GENERAL SETTINGS BEFORE START SNAPPING
 %setMicroscopePropertiesBeforeSnap;
 %% Prepare MACS for snapping
-t_i_gc_pt = etime(clock, T_INITIAL);
-fprintf(f_tlist_analysis, '%s,', t_i_gc_pt/60);
-
-t_i_gc_pt_str = secs2msf(t_i_gc_pt);
-fprintf(f_tlist, '%s,', t_i_gc_pt_str);
+t_gc_pt_i = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_gc_pt_i/60);
+fprintf(file_tf, '%s,', secs2msf(t_gc_pt_i));
 
 %OJO
 pause(1);
 %preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
 
-t_f_gc_pt = etime(clock, T_INITIAL);
-fprintf(f_tlist_analysis, '%s,', t_f_gc_pt/60);
-
-t_f_gc_pt_str = secs2msf(t_f_gc_pt);
-fprintf(f_tlist, '%s,', t_f_gc_pt_str);
+t_gc_pt_f = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_gc_pt_f/60);
+fprintf(file_tf, '%s,', secs2msf(t_gc_pt_f));
 %% MACSing with snapping images
-%Start Repeat for i times:   
+M.t0 = clock; % Initial time of the snap series.
 
-M.t0 = clock;
+t_snaps_i = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_snaps_i/60);
+t_snaps_i_str = secs2msf(t_snaps_i);
+fprintf(file_tf, '%s,', t_snaps_i_str);
 
-t0_sec_full = etime(clock, T_INITIAL);
-fprintf(f_tlist_analysis, '%s,', t0_sec_full/60);
-
-t0_str = secs2msf(t0_sec_full);
-fprintf(f_tlist, '%s,', t0_str);
-
-prefix_img = [prefix, t0_str, '/'];
+prefix_img = [prefix, t_snaps_i_str, '/'];
 mkdir_message = mkdir(prefix_img);
 
-f_snap = fopen([prefix_img, t0_str, '-snapdata.csv'], 'w');
-f_snap_analysis = fopen([prefix_img, t0_str, '-snapanalysis.csv'], 'w');
+filename_sf = [prefix_img, t_snaps_i_str, '_snapfriendly.csv'];
+filename_sa = [prefix_img, t_snaps_i_str, '_snapanalysis.csv'];
 
-snap_header = {'t_rfp_snap', 't_rfp_exp', 't_gfp_snap', 't_gfp_exp'};
+file_sf = fopen(filename_sf, 'w'); %Times for each snap in a friendly format
+file_sa = fopen(filename_sa, 'w'); %Times for each snap in minutes
 
-fprintf(f_snap, '%s,', snap_header{1:end-1});
-fprintf(f_snap, '%s\n', snap_header{end});
+s_header = {'t_rfp_snap', 't_rfp_exp', 't_gfp_snap', 't_gfp_exp'};
 
-fprintf(f_snap_analysis, '%s,', snap_header{1:end-1});
-fprintf(f_snap_analysis, '%s\n', snap_header{end});
+fprintf(file_sf, '%s,', s_header{1:end-1});
+fprintf(file_sf, '%s\n', s_header{end});
+
+fprintf(file_sa, '%s,', s_header{1:end-1});
+fprintf(file_sa, '%s\n', s_header{end});
 
 N_SNAPS = 2;
 for i=1:N_SNAPS
@@ -93,14 +86,12 @@ for i=1:N_SNAPS
     
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
     %macsingSnap(T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING );
-    display('macsing test');
      
    %  mmc.enableContinuousFocus(1)
       
      %pause(0.1)
     
-    %-------------------snap RFP
-    %TODO ADD TIME (INDEX) SO THAT IT DOES NOT OVERWRITE FOLDER    
+    %-------------------snap RFP  
     
     M.imageDir = prefix_img; % change the directory
     
@@ -109,31 +100,26 @@ for i=1:N_SNAPS
 %     mmc.setProperty('TIFilterBlock1','Label','4-G-2Ec') % Set RED Filter
 %     mmc.setProperty('TIEpiShutter','State','1') % Open Epi Shutter
     
-    %TODO SUPERSEGGER NAME
     filename_1 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c1', '.tif'];
     filename_2 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c2', '.tif'];
     %OJO
 %     mmc.setExposure(400); %in ms
 %     mmc.snapImage; %acquire a single image
 
-    %NEWWW  
-    t_rfp_snap_sec = etime(clock, M.t0);
-    t_rfp_exp_sec = etime(clock, T_INITIAL);
+    t_rfp_snap = etime(clock, M.t0);
+    t_rfp_exp = etime(clock, T_INITIAL);
     
-    fprintf(f_snap_analysis, '%s,', t_rfp_snap_sec/60);
-    fprintf(f_snap, '%s,', secs2msf(t_rfp_snap_sec));
+    fprintf(file_sa, '%s,', t_rfp_snap/60);
+    fprintf(file_sf, '%s,', secs2msf(t_rfp_snap));
     
-    fprintf(f_snap_analysis, '%s,', t_rfp_exp_sec/60);
-    fprintf(f_snap, '%s,', secs2msf(t_rfp_exp_sec));
+    fprintf(file_sa, '%s,', t_rfp_exp/60);
+    fprintf(file_sf, '%s,', secs2msf(t_rfp_exp));
     
 %     RFP = flipdim(rot90(reshape(typecast(mmc.getImage,'uint16'), [mmc.getImageWidth, mmc.getImageHeight])),1);
 %     figure(),imshow(RFP,[]);
     ti_min = etime(clock, M.t0)/60; %calculate the timestamp in minutes
     display('timestamp');
     display(num2str(ti_min));
-    
-    
-    
     
     %OJO
 %     imwrite(RFP, filename_1, 'tiff','Compression','none','Description',...
@@ -161,15 +147,14 @@ for i=1:N_SNAPS
 %     mmc.setExposure(800); %in ms
 %     mmc.snapImage; %acquire a single image
 
-    %NEWWW  
-    t_gfp_snap_sec = etime(clock, M.t0);
-    t_gfp_exp_sec = etime(clock, T_INITIAL);
+    t_gfp_snap = etime(clock, M.t0);
+    t_gfp_exp = etime(clock, T_INITIAL);
     
-    fprintf(f_snap_analysis, '%s,', t_gfp_snap_sec/60);
-    fprintf(f_snap, '%s,', secs2msf(t_gfp_snap_sec));
+    fprintf(file_sa, '%s,', t_gfp_snap/60);
+    fprintf(file_sf, '%s,', secs2msf(t_gfp_snap));
     
-    fprintf(f_snap_analysis, '%s\n', t_gfp_exp_sec/60);
-    fprintf(f_snap, '%s\n', secs2msf(t_gfp_exp_sec));
+    fprintf(file_sa, '%s\n', t_gfp_exp/60);
+    fprintf(file_sf, '%s\n', secs2msf(t_gfp_exp));
     
 %     GFP = flipdim(rot90(reshape(typecast(mmc.getImage,'uint16'), [mmc.getImageWidth, mmc.getImageHeight])),1);
 %     figure(),imshow(GFP,[]);
@@ -217,8 +202,6 @@ for i=1:N_SNAPS
   
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
     %cleanFov(T_CLEAN_FOV, N_CLEAN_FOV);
-    display('clean fov test');
-    
     
     close all
     toc
@@ -227,24 +210,18 @@ for i=1:N_SNAPS
     pause(x);
 end
 
-tf_sec_full = etime(clock, T_INITIAL);
-fprintf(f_tlist_analysis, '%s\n', tf_sec_full/60);
-
-tf_str = secs2msf(tf_sec_full);
-fprintf(f_tlist, '%s\n', tf_str);
+t_snaps_f = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s\n', t_snaps_f/60);
+fprintf(file_tf, '%s\n', secs2msf(t_snaps_f));
 %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
 %ptToW2(T_WASTE_FINAL);
 %allOff();
-display('w2 test');
 pause(3);
 
 display('Snaps DONE')
 %clearvars -except mmc
-%To cancel process CONTROL+C
-
-%NEWWWW
-fclose(f_snap);
-fclose(f_snap_analysis);
+fclose(file_sf);
+fclose(file_sa);
 %% RUN ONLY AT THE END OF THE EXPERIMENT TO CLOSE FILES
-fclose( f_tlist );
-fclose( f_tlist_analysis );
+fclose( f_ta );
+fclose( f_tf );

@@ -49,10 +49,10 @@
 %       Added a READ BEFORE USE section at the beginning with instructions
 %       and clarifications
 %       Test of the new prompt and directory creation layout done it
-%       december 22 FILL
+%       december 22. Succesful.
 %       Test of all the microscope functions, their exception handling and
 %       their documentation. All were successfully tested except
-%       setObjective, loadDaq,  and setExperimentInfo.
+%       setObjective, loadDaq.
 %   2017-FEB-17
 %       T_ INITIAL defined inside setExperimentInfo instead of in main
 %       after setMicroscopePropertiesBeforeSnap.
@@ -64,7 +64,7 @@
 %       time of the day is included to avoid overwriting of experiments
 %       done in the same day.
 %       Added data files for each experiment, they are tdata and tanalysis.
-%       Both contain four columns t_gc_to_pt_i, t_gc_to_pt_f, t_snaps_i and
+%       Both contain four columns t_gc_pt_i, t_gc_pt_f, t_snaps_i and
 %       t_snaps_f. In tdata they are given in the format mm-ss-fff and in
 %       tanalysis in minutes.
 %       Added data files for each time folder (set of snaps), they are
@@ -72,12 +72,14 @@
 %       t_rfp_exp, t_gfp_snap, t_gfp_exp with the time for each rfp and gfp
 %       snap from the beginning of the experiment (exp) and from the
 %       beginning of the current snap series (snap). The format is
-%       mm-ss-fff for snapdata and in minutoes for snapanalysis.
+%       mm-ss-fff for snapdata and in minutes for snapanalysis.
+%   TODO
+%       Test the remaining functions: setObjective and loadDaq
+%       Write the documentation an organized document including the
+%       directory format and the data files format.
+%       Test everything in the Microscope PC and with the MACS connected.
 %% DATE: 2017-FEB-17
 %% Declare constants
-%TODO
-%DEFINE TIME BETWEEN SNAPS AND USE IT TO DEFINE SNAPS TIMES, DECIDE IF IN
-%THE DIALOG OR IN THE SCRIPT
 declareConstants;
 %% Microscope CORE
 loadMicroscope;
@@ -93,32 +95,68 @@ setLightPath('Eye');
 setFilter('GREEN');
 setLampStatus(0);
 setLightPath('Eye');
-%%TODO see what to do with escape issue does not do PFS and set the objective 
 setEpiShutter(0);
 %% Perfect Focus ON
 setPfs(1);
 %% Initialize the NI-DAQ board and the 10 of 12 pins available
 loadDaq;
 %% MACS FILE INFO about experiment, Read position list and create directory
+% WHEN YOU CLICK OK, THE EXPERIMENT TIME STARTS COUNTING.
 setExperimentInfo;
+
+filename_tf = [prefix, M.time,'_',M.media, '_', M.strain,'_tfriendly.csv'];
+filename_ta = [prefix, M.time,'_',M.media, '_', M.strain,'_tanalysis.csv'];
+
+file_tf = fopen(filename_tf, 'w');  % times in a friendly format (mm-ss-fff)
+file_ta = fopen(filename_ta, 'w');  % times for analysis (mins)
+
+t_header = {'t_gc_pt_i', 't_gc_pt_f', 't_snaps_i', 't_snaps_f'};
+
+fprintf(f_tf, '%s,', t_header{1:end-1});
+fprintf(f_tf, '%s\n', t_header{end});
+
+fprintf(f_ta, '%s,', t_header{1:end-1});
+fprintf(f_ta, '%s\n', t_header{end});
 %% GENERAL SETTINGS BEFORE START SNAPPING
 setMicroscopePropertiesBeforeSnap;
 %% Prepare MACS for snapping
-preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
-%% MACSing with snapping images
-%Start Repeat for i times:   
+t_gc_pt_i = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_gc_pt_i/60);
+fprintf(file_tf, '%s,', secs2msf(t_gc_pt_i));
 
-M.t0 = clock;
-t_sec_full = etime(M.t0, T_INITIAL);
-t_min_full = t_sec_full/60;
-t_min = floor(t_min_full);
-t_sec = floor((t_min_full-t_min)*60);
-t_str = [num2str(t_min), '_', num2str(t_sec)];
-prefix_img = [prefix, '/', t_str, '/'];
+preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
+
+t_gc_pt_f = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_gc_pt_f/60);
+fprintf(file_tf, '%s,', secs2msf(t_gc_pt_f));
+%% MACSing with snapping images 
+M.t0 = clock; % Initial time of the snap series.
+
+t_snaps_i = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_snaps_i/60);
+t_snaps_i_str = secs2msf(t_snaps_i);
+fprintf(file_tf, '%s,', t_snaps_i_str);
+
+prefix_img = [prefix, t_snaps_i_str, '/'];
 mkdir_message = mkdir(prefix_img);
+
+filename_sf = [prefix_img, t_snaps_i_str, '_snapfriendly.csv'];
+filename_sa = [prefix_img, t_snaps_i_str, '_snapanalysis.csv'];
+
+file_sf = fopen(filename_sf, 'w'); %Times for each snap in a friendly format
+file_sa = fopen(filename_sa, 'w'); %Times for each snap in minutes
+
+s_header = {'t_rfp_snap', 't_rfp_exp', 't_gfp_snap', 't_gfp_exp'};
+
+fprintf(file_sf, '%s,', s_header{1:end-1});
+fprintf(file_sf, '%s\n', s_header{end});
+
+fprintf(file_sa, '%s,', s_header{1:end-1});
+fprintf(file_sa, '%s\n', s_header{end});
 
 N_SNAPS = 2;
 for i=1:N_SNAPS
+    
     display(['Snap ', num2str(i),' out of ', num2str(N_SNAPS)]) 
     tic
     %Moving stage
@@ -147,25 +185,32 @@ for i=1:N_SNAPS
     
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
     %macsingSnap(T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING );
-    display('macsing test');
     
    %  mmc.enableContinuousFocus(1)
       
      %pause(0.1)
     
-    %-------------------snap RFP
-    %TODO ADD TIME (INDEX) SO THAT IT DOES NOT OVERWRITE FOLDER    
+    %-------------------snap RFP 
     
     M.imageDir = prefix_img; % change the directory
     
     %     for i=1:5 % this is for focus adjustment only
     mmc.setProperty('TIFilterBlock1','Label','4-G-2Ec') % Set RED Filter
     mmc.setProperty('TIEpiShutter','State','1') % Open Epi Shutter
-    %TODO SUPERSEGGER NAME
+    
     filename_1 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c1', '.tif'];
     filename_2 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c2', '.tif'];
     mmc.setExposure(400); %in ms
     mmc.snapImage; %acquire a single image
+    
+    t_rfp_snap = etime(clock, M.t0);
+    t_rfp_exp = etime(clock, T_INITIAL);
+    fprintf(file_sa, '%s,', t_rfp_snap/60);
+    fprintf(file_sf, '%s,', secs2msf(t_rfp_snap));
+    
+    fprintf(file_sa, '%s,', t_rfp_exp/60);
+    fprintf(file_sf, '%s,', secs2msf(t_rfp_exp));
+    
     RFP = flipdim(rot90(reshape(typecast(mmc.getImage,'uint16'), [mmc.getImageWidth, mmc.getImageHeight])),1);
     figure(),imshow(RFP,[]);
     ti_min = etime(clock, M.t0)/60; %calculate the timestamp in minutes
@@ -190,6 +235,16 @@ for i=1:N_SNAPS
     filename_3 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c3', '.tif'];
     mmc.setExposure(800); %in ms
     mmc.snapImage; %acquire a single image
+    
+    t_gfp_snap = etime(clock, M.t0);
+    t_gfp_exp = etime(clock, T_INITIAL);
+    
+    fprintf(file_sa, '%s,', t_gfp_snap/60);
+    fprintf(file_sf, '%s,', secs2msf(t_gfp_snap));
+    
+    fprintf(file_sa, '%s\n', t_gfp_exp/60);
+    fprintf(file_sf, '%s\n', secs2msf(t_gfp_exp));
+    
     GFP = flipdim(rot90(reshape(typecast(mmc.getImage,'uint16'), [mmc.getImageWidth, mmc.getImageHeight])),1);
     figure(),imshow(GFP,[]);
     imwrite(GFP, filename_3, 'tiff','Compression','none','Description',...
@@ -242,16 +297,20 @@ for i=1:N_SNAPS
     %x = (M.TimeBetweenSnaps*60-toc);
     pause(x);
 end
+
+t_snaps_f = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s\n', t_snaps_f/60);
+fprintf(file_tf, '%s\n', secs2msf(t_snaps_f));
+
 %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
 %ptToW2(T_WASTE_FINAL);
 %allOff();
-display('w2 test');
 pause(3);
 
 display('Snaps DONE')
 %clearvars -except mmc
-%To cancel process CONTROL+C
-%%
+fclose(file_sf);
+fclose(file_sa);
 %% Cleaning Protocol 0 Bleach
 cleanBleach(N_CLEAN_BLEACH, T_FILL_BLEACH, T_WAIT_BLEACH, T_WASTE_BLEACH);
 %% Cleaning Protocol 1 Ethanol
@@ -260,8 +319,6 @@ cleanEthanol(N_CLEAN_ETHANOL, T_FILL_ETHANOL, T_WAIT_ETHANOL, T_WASTE_ETHANOL);
 cleanMilliq(N_CLEAN_MILLIQ, T_FILL_MILLIQ, T_WAIT_MILLIQ, T_WASTE_MILLIQ, T_PT_TO_W2, T_CHIP_CLEANING);
 %% Cleaning Protocol 3 Final
 cleanFinal(4, T_W1, 20, 2, T_WASTE_FINAL);
-%% Cleaning Protocol 3 Final
-milliq(12)
-allOff()
-ptToW2(30)
-allOff()
+%% RUN ONLY AT THE END OF THE EXPERIMENT TO CLOSE FILES
+fclose( f_ta );
+fclose( f_tf );

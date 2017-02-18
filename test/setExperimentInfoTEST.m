@@ -31,7 +31,7 @@ cam_pixel_size = 0.0645;
 %system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/';
 %CHANGED HERE IN OUTPUT FILENAME (SAVE IT INSIDE Luis)
 system_prefix = '~/Desktop/MACS/';
-output_filename = strcat(system_prefix, M.user ,'/experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
+output_filename = strcat(system_prefix, M.user, '/experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
 output_file = fopen(output_filename,'w');
 output_format = '%s\t%s\n';
 
@@ -44,8 +44,7 @@ fprintf(output_file, output_format, 'cMount',num2str(cMount));
 fprintf(output_file, output_format, 'Camera Pixel Size (um)',num2str(cam_pixel_size));
 fclose(output_file);
 
-%UNCOMMENT
-%open(output_filename);
+open(output_filename);
 
 global M1;
 % Read the position list
