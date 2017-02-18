@@ -31,7 +31,13 @@ cam_pixel_size = 0.0645;
 %system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/';
 %CHANGED HERE IN OUTPUT FILENAME (SAVE IT INSIDE Luis)
 system_prefix = '~/Desktop/MACS/';
-output_filename = strcat(system_prefix, M.user, '/experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
+
+% Creates directory for the images
+global prefix;
+prefix = [system_prefix, M.user,'/',M.time,'_',M.media, '_', M.strain, '/'];
+mkdir_message = mkdir(prefix);
+
+output_filename = strcat(prefix,'experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
 output_file = fopen(output_filename,'w');
 output_format = '%s\t%s\n';
 
@@ -68,8 +74,3 @@ Position = M.totalPositions;
     %mkdirRFP = mkdir(prefix_v1_rfp);
     %mkdirGFP = mkdir(prefix_v1_gfp); 
 %end
-
-% Creates directory for the images
-global prefix;
-prefix = [system_prefix, M.user,'/',M.time,'_',M.media, '_', M.strain, '/'];
-mkdir_message = mkdir(prefix);

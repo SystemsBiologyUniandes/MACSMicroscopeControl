@@ -34,7 +34,13 @@ cam_pixel_size = 0.0645;
 % Info file saving
 %system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/'; (Microscope PC)
 system_prefix = '~/Desktop/MACS/'; % (Ubuntu)
-output_filename = strcat(system_prefix, M.user, 'experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
+
+% Creates directory for the images
+global prefix;
+prefix = [system_prefix, M.user,'/',M.time,'_',M.media, '_', M.strain, '/'];
+mkdir_message = mkdir(prefix);
+
+output_filename = strcat(prefix, 'experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
 output_file = fopen(output_filename,'w');
 output_format = '%s\t%s\n';
 [ncols,nrows] = size(output_prompt);
@@ -55,7 +61,3 @@ M1 = readPositionList9(M);
 %M = readPositionList10(M);
 M1.position(1) %check if the position list reading worked correctly
 
-% Creates directory for the images
-global prefix;
-prefix = [system_prefix, M.user,'/',M.time,'_',M.media, '_', M.strain, '/'];
-mkdir_message = mkdir(prefix);

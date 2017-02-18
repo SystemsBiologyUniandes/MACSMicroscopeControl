@@ -1,92 +1,24 @@
-%% First: initialize communication between hardware components and computer
-% Initalize Micro-manager
-% MACS ACQUISITION PROGRAM
+%% MACS ACQUISITION PROGRAM
 % AUTHORS:
-% Juan Arias   -- ju-aria1@uniandes.edu.co
-% Luis Gutierrez -- la.gutierrez1280@uniandes.edu.co
-% Carlos Sanchez -- ca.sanchez1209@uniandes.edu.co
-%% READ BEFORE USE
-% 1. Calibrate the constants in the script declareConstants with the manual
-% program first, especially the T_FILL_GC_TO_PT and the times of flow from
-% the cleaning tubes to the PT.
-% 2. The pressures MUST be kept fixed throughout the experiment after the
-% calibration.
-% 3. When you call a function for MACS control, you must call allOff() after
-% it if you want the valves to be turned off after the time you entered.
-% 4. If you want to abort a valve status before the entered time, press
-% Ctrl+C and run allOff() immediately.
-% 5. The order in which the cells are run is the following
-%   a. declareConstants
-%   b. loadMicroscope
-%   c. setMicroscopePropertiesHama
-%   d. loadDaq.
-%   e. setExperimentInfo().
-%   f. setMicroscopePropertiesBeforeSnap;
-%      T_INITIAL = clock;
-%       This starts the clock, so it must be run when the GC measurement is
-%       started, or record the time at which the GC is when this cell is
-%       run.
-%   g. Presnapping
-% After these steps, the setup is ready for the image taking.
-% When you run the cell 
-%% Luis Gutierrez Updates
-%   2016-SEP-2 
-%       Created functions for the different valve states.
-%   2016-SEP-16
-%        Improvements for the functions and definitions of variables and
-%        constants, a pause was added, the time enters as a parameter.
-%   2017-JAN-19 
-%       Changed macs to global variable instead of setting it as a parameter.
-%       Tested if the import statement in loadMicroscope can be called
-%       inside a function and the result was negative. It must be a script
-%       since the variable mmc is global.
-%       Tested if for the function setStageSpeed the argument val must be
-%       integer or it can be float. It must be an integer between 1 and 9.
-%       The exception was added to the function.
-%   2017-FEB-15 
-%       Added ocumentation to the declareConstants script with explanations
-%       for all the constants.
-%       Added a READ BEFORE USE section at the beginning with instructions
-%       and clarifications
-%       Test of the new prompt and directory creation layout done it
-%       december 22. Succesful.
-%       Test of all the microscope functions, their exception handling and
-%       their documentation. All were successfully tested except
-%       setObjective, loadDaq.
-%   2017-FEB-17
-%       T_ INITIAL defined inside setExperimentInfo instead of in main
-%       after setMicroscopePropertiesBeforeSnap.
-%       In setExperimentInfo there is another text box in the prompt with
-%       the label 'Time difference with LabView (min)' and this time
-%       difference is saved in the Info file.
-%       Added M.date with hours, minutes and seconds. In the filenames and
-%       the directories created at the beginning of each experiment the
-%       time of the day is included to avoid overwriting of experiments
-%       done in the same day.
-%       Added data files for each experiment, they are tdata and tanalysis.
-%       Both contain four columns t_gc_pt_i, t_gc_pt_f, t_snaps_i and
-%       t_snaps_f. In tdata they are given in the format mm-ss-fff and in
-%       tanalysis in minutes.
-%       Added data files for each time folder (set of snaps), they are
-%       snapdata and snapanalysis. They have four columns, t_rfp_snap,
-%       t_rfp_exp, t_gfp_snap, t_gfp_exp with the time for each rfp and gfp
-%       snap from the beginning of the experiment (exp) and from the
-%       beginning of the current snap series (snap). The format is
-%       mm-ss-fff for snapdata and in minutes for snapanalysis.
-%   TODO
-%       Test the remaining functions: setObjective and loadDaq
-%       Write the documentation an organized document including the
-%       directory format and the data files format.
-%       Test everything in the Microscope PC and with the MACS connected.
-%% DATE: 2017-FEB-17
-%% Declare constants
+% Juan Carlos Arias Castro - ju-aria1@uniandes.edu.co
+% Luis Alberto Gutierrez Lopez - la.gutierrez1280@uniandes.edu.co
+% Carlos Arturo Sanchez isaza - ca.sanchez1209@uniandes.edu.co
+%% TO DO before running
+% Change the system_dir in setExperimentInfo
+% Verify that the experimentInfo file is saved into the experiment dir.
+% Uncomment the MACS sections in the snaps section
+%% DATE: 2017-FEB-18
+% See the wiki on Github for instructions
+%% 1. Declare constants
 declareConstants;
-%% Microscope CORE
+%% 2. Microscope core
 loadMicroscope;
-%% Unload microscope
+%% 2a. Unload microscope
 unloadMicroscope;
-%% Set all microscope properties
+%% 3. Set all microscope properties
 setMicroscopePropertiesHama;
+%% 4. Initialize NI-DAQ board
+loadDaq;
 %% EYE BF
 setFilter('Analy');
 setLampStatus(1,3);
@@ -98,10 +30,7 @@ setLightPath('Eye');
 setEpiShutter(0);
 %% Perfect Focus ON
 setPfs(1);
-%% Initialize the NI-DAQ board and the 10 of 12 pins available
-loadDaq;
-%% MACS FILE INFO about experiment, Read position list and create directory
-% WHEN YOU CLICK OK, THE EXPERIMENT TIME STARTS COUNTING.
+%% 5. Set experiment information
 setExperimentInfo;
 
 filename_tf = [prefix, M.time,'_',M.media, '_', M.strain,'_tfriendly.csv'];
@@ -117,9 +46,9 @@ fprintf(f_tf, '%s\n', t_header{end});
 
 fprintf(f_ta, '%s,', t_header{1:end-1});
 fprintf(f_ta, '%s\n', t_header{end});
-%% GENERAL SETTINGS BEFORE START SNAPPING
+%% 6. General settings before start snapping
 setMicroscopePropertiesBeforeSnap;
-%% Prepare MACS for snapping
+%% 7. Prepare MACS for snapping
 t_gc_pt_i = etime(clock, T_INITIAL);
 fprintf(file_ta, '%s,', t_gc_pt_i/60);
 fprintf(file_tf, '%s,', secs2msf(t_gc_pt_i));
@@ -129,7 +58,7 @@ preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
 t_gc_pt_f = etime(clock, T_INITIAL);
 fprintf(file_ta, '%s,', t_gc_pt_f/60);
 fprintf(file_tf, '%s,', secs2msf(t_gc_pt_f));
-%% MACSing with snapping images 
+%% 8. MACSing with snapping images 
 M.t0 = clock; % Initial time of the snap series.
 
 t_snaps_i = etime(clock, T_INITIAL);
@@ -311,14 +240,15 @@ display('Snaps DONE')
 %clearvars -except mmc
 fclose(file_sf);
 fclose(file_sa);
-%% Cleaning Protocol 0 Bleach
+%% 9. Cleaning protocols
+%% 9a. Cleaning protocol 0 Bleach
 cleanBleach(N_CLEAN_BLEACH, T_FILL_BLEACH, T_WAIT_BLEACH, T_WASTE_BLEACH);
-%% Cleaning Protocol 1 Ethanol
+%% 9b. Cleaning protocol 1 Ethanol
 cleanEthanol(N_CLEAN_ETHANOL, T_FILL_ETHANOL, T_WAIT_ETHANOL, T_WASTE_ETHANOL);
-%% Cleaning Protocol 2 MilliQ
+%% 9c. Cleaning protocol 2 MilliQ
 cleanMilliq(N_CLEAN_MILLIQ, T_FILL_MILLIQ, T_WAIT_MILLIQ, T_WASTE_MILLIQ, T_PT_TO_W2, T_CHIP_CLEANING);
-%% Cleaning Protocol 3 Final
+%% 10. Cleaning protocol 3 Final
 cleanFinal(4, T_W1, 20, 2, T_WASTE_FINAL);
-%% RUN ONLY AT THE END OF THE EXPERIMENT TO CLOSE FILES
+%% 11. Close files
 fclose( f_ta );
 fclose( f_tf );
