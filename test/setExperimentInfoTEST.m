@@ -29,8 +29,9 @@ cam_pixel_size = 0.0645;
 
 %Info file saving
 %system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/';
-system_prefix = '~/Desktop/';
-output_filename = strcat(system_prefix, 'experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
+%CHANGED HERE IN OUTPUT FILENAME (SAVE IT INSIDE Luis)
+system_prefix = '~/Desktop/MACS/';
+output_filename = strcat(system_prefix, M.user ,'/experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
 output_file = fopen(output_filename,'w');
 output_format = '%s\t%s\n';
 
@@ -43,15 +44,16 @@ fprintf(output_file, output_format, 'cMount',num2str(cMount));
 fprintf(output_file, output_format, 'Camera Pixel Size (um)',num2str(cam_pixel_size));
 fclose(output_file);
 
-open(output_filename);
+%UNCOMMENT
+%open(output_filename);
 
 global M1;
 % Read the position list
 Position = M.totalPositions;
-M.rootDir='C:\Users\Juan Arias\Desktop\MACS\Position List (DO NOT DELETE)\';
-M1 = readPositionList9(M);
+%M.rootDir='C:\Users\Juan Arias\Desktop\MACS\Position List (DO NOT DELETE)\';
+%M1 = readPositionList9(M);
 %M = readPositionList10(M);
-M1.position(1) %check if the position list reading worked correctly
+%M1.position(1) %check if the position list reading worked correctly
 
 % Create directories for Image Storage
 %TODO PROMPT TO DEFINE NAME OF THE CHANNELS, AND NUMBER OF CHANNELS IN

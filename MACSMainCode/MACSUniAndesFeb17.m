@@ -53,7 +53,14 @@
 %       Test of all the microscope functions, their exception handling and
 %       their documentation. All were successfully tested except
 %       setObjective, loadDaq,  and setExperimentInfo.
-%% DATE: 2017-FEB-15
+%   2017-FEB-17
+%       T_ INITIAL defined inside setExperimentInfo instead of in main
+%       after setMicroscopePropertiesBeforeSnap.
+%       In setExperimentInfo there is another text box in the prompt with
+%       the label 'Time difference with LabView (min)' and this time
+%       difference is saved in the Info file.
+%       Added M.date with hours, minutes and seconds.
+%% DATE: 2017-FEB-17
 %% Declare constants
 %TODO
 %DEFINE TIME BETWEEN SNAPS AND USE IT TO DEFINE SNAPS TIMES, DECIDE IF IN
@@ -83,14 +90,14 @@ loadDaq;
 setExperimentInfo;
 %% GENERAL SETTINGS BEFORE START SNAPPING
 setMicroscopePropertiesBeforeSnap;
-T_INITIAL = clock;
 %% Prepare MACS for snapping
 preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
 %% MACSing with snapping images
 %Start Repeat for i times:   
 
 M.t0 = clock;
-t_min_full = etime(M.t0, T_INITIAL)/60;
+t_sec_full = etime(M.t0, T_INITIAL);
+t_min_full = t_sec_full/60;
 t_min = floor(t_min_full);
 t_sec = floor((t_min_full-t_min)*60);
 t_str = [num2str(t_min), '_', num2str(t_sec)];
@@ -128,8 +135,7 @@ for i=1:N_SNAPS
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
     %macsingSnap(T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING );
     display('macsing test');
-    pause(3);
-     
+    
    %  mmc.enableContinuousFocus(1)
       
      %pause(0.1)
@@ -215,7 +221,6 @@ for i=1:N_SNAPS
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
     %cleanFov(T_CLEAN_FOV, N_CLEAN_FOV);
     display('clean fov test');
-    pause(2);
     
     
     close all
