@@ -41,11 +41,11 @@ file_ta = fopen(filename_ta, 'w');  % times for analysis (mins)
 
 t_header = {'t_gc_pt_i', 't_gc_pt_f', 't_snaps_i', 't_snaps_f'};
 
-fprintf(f_tf, '%s,', t_header{1:end-1});
-fprintf(f_tf, '%s\n', t_header{end});
+fprintf(file_tf, '%s,', t_header{1:end-1});
+fprintf(file_tf, '%s\n', t_header{end});
 
-fprintf(f_ta, '%s,', t_header{1:end-1});
-fprintf(f_ta, '%s\n', t_header{end});
+fprintf(file_ta, '%s,', t_header{1:end-1});
+fprintf(file_ta, '%s\n', t_header{end});
 %% 6. General settings before start snapping
 setMicroscopePropertiesBeforeSnap;
 %% 7. Prepare MACS for snapping
@@ -83,7 +83,7 @@ fprintf(file_sf, '%s\n', s_header{end});
 fprintf(file_sa, '%s,', s_header{1:end-1});
 fprintf(file_sa, '%s\n', s_header{end});
 
-N_SNAPS = 2;
+N_SNAPS = 40;
 for i=1:N_SNAPS
     
     display(['Snap ', num2str(i),' out of ', num2str(N_SNAPS)]) 
@@ -101,19 +101,19 @@ for i=1:N_SNAPS
     % EACH SNAP COULD BE CHANGING THE FOCUS AND THAT MAY BE THE CAUSE OF
     % THE PROBLEM WE WERE HAVING
     
-    mmc.setProperty('TIPFSOffset','Position',num2str(M1.position(pn).PFSOffset{1}));
-    mmc.waitForDevice('TIPFSOffset')
+    %mmc.setProperty('TIPFSOffset','Position',num2str(M1.position(pn).PFSOffset{1}));
+    %mmc.waitForDevice('TIPFSOffset')
     
-    mmc.isContinuousFocusEnabled();
+    %mmc.isContinuousFocusEnabled();
     mmc.setProperty('TIPFSStatus','State','On');
-    mmc.enableContinuousFocus(1);
-    mmc.waitForDevice('TIPFSStatus');
+    %mmc.enableContinuousFocus(1);
+    %mmc.waitForDevice('TIPFSStatus');
     %pause(5);
     
     %mmc.waitForDevice('TIPFSStatus')
     
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
-    %macsingSnap(T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING );
+    macsingSnap(T_PT_TO_CHIP, T_ACCUMULATING, T_MACSING );
     
    %  mmc.enableContinuousFocus(1)
       
@@ -129,7 +129,7 @@ for i=1:N_SNAPS
     
     filename_1 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c1', '.tif'];
     filename_2 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c2', '.tif'];
-    mmc.setExposure(400); %in ms
+    mmc.setExposure(600); %in ms
     mmc.snapImage; %acquire a single image
     
     t_rfp_snap = etime(clock, M.t0);
@@ -162,7 +162,7 @@ for i=1:N_SNAPS
     mmc.setProperty('TIFilterBlock1','Label','3-B-2Ec') % Set GREEN Filter
     mmc.setProperty('TIEpiShutter','State','1')
     filename_3 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c3', '.tif'];
-    mmc.setExposure(800); %in ms
+    mmc.setExposure(600); %in ms
     mmc.snapImage; %acquire a single image
     
     t_gfp_snap = etime(clock, M.t0);
@@ -216,7 +216,7 @@ for i=1:N_SNAPS
     %mmc.enableContinuousFocus(0); 
   
     %UNCOMMENT HERE WHEN TESTS ARE COMPLETE
-    %cleanFov(T_CLEAN_FOV, N_CLEAN_FOV);
+    cleanFov(T_CLEAN_FOV, N_CLEAN_FOV);
     display('clean fov test');
     
     
@@ -231,9 +231,9 @@ t_snaps_f = etime(clock, T_INITIAL);
 fprintf(file_ta, '%s\n', t_snaps_f/60);
 fprintf(file_tf, '%s\n', secs2msf(t_snaps_f));
 
-%UNCOMMENT HERE WHEN TESTS ARE COMPLETE
-%ptToW2(T_WASTE_FINAL);
-%allOff();
+%% UNCOMMENT HERE WHEN TESTS ARE COMPLETE
+ptToW2(T_WASTE_FINAL);
+allOff();
 pause(3);
 
 display('Snaps DONE')
@@ -241,7 +241,8 @@ display('Snaps DONE')
 fclose(file_sf);
 fclose(file_sa);
 %% 9. Cleaning protocols
-%% 9a. Cleaning protocol 0 Bleach
+% 9a. Cleaning protocol 0 Bleach
+tic
 cleanBleach(N_CLEAN_BLEACH, T_FILL_BLEACH, T_WAIT_BLEACH, T_WASTE_BLEACH);
 %% 9b. Cleaning protocol 1 Ethanol
 cleanEthanol(N_CLEAN_ETHANOL, T_FILL_ETHANOL, T_WAIT_ETHANOL, T_WASTE_ETHANOL);

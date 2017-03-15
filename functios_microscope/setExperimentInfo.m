@@ -32,8 +32,8 @@ cMount = 0.7;
 cam_pixel_size = 0.0645;
 
 % Info file saving
-%system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/'; (Microscope PC)
-system_prefix = '~/Desktop/MACS/'; % (Ubuntu)
+system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/'; %(Microscope PC)
+%system_prefix = '~/Desktop/MACS/'; % (Ubuntu)
 
 % Creates directory for the images
 global prefix;

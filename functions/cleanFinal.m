@@ -8,15 +8,22 @@ function cleanFinal(n, tW1, tFill, tWait, tWaste)
 %       Turns all valves off.
 %       Repeats n times.
 
-    gcToW1(tW1);
-    allOff();
     for i=1:n
+        gcToW1(tW1);
+        allOff();
         gcToPt(tFill);
         allOff();
         pause(tWait);
         ptToW2(tWaste);
         allOff();
     end
+    for i=1:n
+        gcToPt(tFill);
+        allOff();
+        pause(tWait);
+        ptToChip(tWaste);
+        allOff();
+     end  
     
     display('Cleaning Final Done')
 end

@@ -11,10 +11,10 @@ N_CLEAN_FOV = 8;
 % Time that the FOV is cleaned on each repetition
 T_CLEAN_FOV = 0.2;
 %% Time to fill the PT from the GC
-T_FILL_GC_TO_PT = 15;
+T_FILL_GC_TO_PT = 8;
 %% Preparation before snapping
 % Time to send from PT to W2 to bring the cells closer to the chip.
-T_PT_TO_W2 = 0.8;
+T_PT_TO_W2 = 1.5;
 % Time to send from PT to CHIP before snapping to ensure that the cells
 % reach the FOV:
 T_CHIP_PRESNAP = 240;
@@ -22,17 +22,17 @@ T_CHIP_PRESNAP = 240;
 % Time to send from PT to Chip
 T_PT_TO_CHIP = 2;
 % Time to accumulate cells in the FOV
-T_ACCUMULATING = 2;
+T_ACCUMULATING = 1;
 % Time to press the cells (and wait for the first snap)
-T_MACSING = 2;
+T_MACSING = 3;
 %% Cleaning
 % Number of cleaning steps
-N_CLEAN_BLEACH = 3;
+N_CLEAN_BLEACH = 2;
 N_CLEAN_ETHANOL = 2;
 N_CLEAN_MILLIQ = 4;
 % Time to fill the PT on cleaning steps
 %   By default it is the same for all. This can be changed.
-T_FILL_CLEANING_TO_PT = 17;
+T_FILL_CLEANING_TO_PT = 8;
 T_FILL_BLEACH = T_FILL_CLEANING_TO_PT;
 T_FILL_ETHANOL = T_FILL_CLEANING_TO_PT;
 T_FILL_MILLIQ = T_FILL_CLEANING_TO_PT;
@@ -51,6 +51,6 @@ T_WASTE_ETHANOL = T_WASTE;
 T_WASTE_MILLIQ = T_WASTE;
 T_WASTE_FINAL = T_WASTE;
 %Time for sending to Chip on MilliQ cleaning step
-T_CHIP_CLEANING = 300;
+T_CHIP_CLEANING = 400;
 %Time for sending from GC to W1 on final cleaning process
 T_W1 = 40;
