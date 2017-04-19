@@ -7,9 +7,10 @@ function cleanRbs35(n, tFill, tWait, tWaste)
 %       Repeats n times.
     for i=1:n
         rbs35(tFill);
+        allOff();
+        pause(tWait/4);
         ptToW2(tWaste);
         allOff();
-        pause(2);
     end
     display('Cleaning RBS 35 Done')
     rbs35(tFill);
@@ -17,7 +18,6 @@ function cleanRbs35(n, tFill, tWait, tWaste)
     pause(tWait);
     ptToW2(tWaste);
     allOff();
-    pause(2);
 end
 
 

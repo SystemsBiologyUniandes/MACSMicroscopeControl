@@ -76,14 +76,14 @@ for k=1:length(pos) %loop over all positions
     for i=1:size(data,2)                
         if findstr(char(cellstr(data(i))),pos(k).label)
            pos_line = strread(char(cellstr(data(i))),'%s') ;
-           pos(k).X = strread(char(cellstr(data(i-6))),'%s') ;
+           pos(k).X = strread(char(cellstr(data(i-5))),'%s') ;
            pos(k).X = {str2double(pos(k).X(2))};
-           pos(k).Y = strread(char(cellstr(data(i-7))),'%s') ;
+           pos(k).Y = strread(char(cellstr(data(i-6))),'%s') ;
            pos(k).Y = {str2double(pos(k).Y(2))};
            %pos(k).Z = strread(char(cellstr(data(i-20))),'%s') ; %Comment for MACS
            %pos(k).Z = {str2double(pos(k).Z(2))}; %Comment for MACS
-           pos(k).PFSOffset = strread(char(cellstr(data(i-13))),'%s') ;
-           pos(k).PFSOffset = {str2double(pos(k).PFSOffset(2))}; 
+           %pos(k).PFSOffset = strread(char(cellstr(data(i-13))),'%s') ;
+           %pos(k).PFSOffset = {str2double(pos(k).PFSOffset(2))}; 
            break; %makes sure we don't double write a position (NL). 
         end
     end

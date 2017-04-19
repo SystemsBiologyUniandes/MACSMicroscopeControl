@@ -33,8 +33,8 @@ setPfs(1);
 %% 5. Set experiment information
 setExperimentInfo;
 
-filename_tf = [prefix, M.time,'_',M.media, '_', M.strain,'_tfriendly.csv'];
-filename_ta = [prefix, M.time,'_',M.media, '_', M.strain,'_tanalysis.csv'];
+filename_tf = [prefix1, M.time,'_',M.media, '_', M.strain,'_tfriendly.csv'];
+filename_ta = [prefix1, M.time,'_',M.media, '_', M.strain,'_tanalysis.csv'];
 
 file_tf = fopen(filename_tf, 'w');  % times in a friendly format (mm-ss-fff)
 file_ta = fopen(filename_ta, 'w');  % times for analysis (mins)
@@ -48,6 +48,19 @@ fprintf(file_ta, '%s,', t_header{1:end-1});
 fprintf(file_ta, '%s\n', t_header{end});
 %% 6. General settings before start snapping
 setMicroscopePropertiesBeforeSnap;
+%% 6a. Measure
+gcToW1(8);
+allOff();
+%% 7. Prepare MACS for snapping
+t_gc_pt_i = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_gc_pt_i/60);
+fprintf(file_tf, '%s,', secs2msf(t_gc_pt_i));
+
+preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
+
+t_gc_pt_f = etime(clock, T_INITIAL);
+fprintf(file_ta, '%s,', t_gc_pt_f/60);
+fprintf(file_tf, '%s,', secs2msf(t_gc_pt_f));
 %%
 % t_gc_pt_i = etime(clock, T_INITIAL);
 % fprintf(file_ta, '%s,', t_gc_pt_i/60);
@@ -62,29 +75,6 @@ setMicroscopePropertiesBeforeSnap;
 % Y_n = M1.position(pn).Y{1};
 % mmc.setXYPosition('TIXYDrive', X_n, Y_n)
 % mmc.waitForDevice('TIXYDrive')
-%% 6a. Measure
-gcToW1(10); %Cleaning pressure line 10 psi
-allOff();
-pause(2);
-display('starting Presnapping')
-
-%% 7. Prepare MACS for snapping
-t_gc_pt_i = etime(clock, T_INITIAL);
-fprintf(file_ta, '%s,', t_gc_pt_i/60);
-fprintf(file_tf, '%s,', secs2msf(t_gc_pt_i));
-
-preSnapping(T_FILL_GC_TO_PT, T_PT_TO_W2, T_CHIP_PRESNAP);
-
-t_gc_pt_f = etime(clock, T_INITIAL);
-fprintf(file_ta, '%s,', t_gc_pt_f/60);
-fprintf(file_tf, '%s,', secs2msf(t_gc_pt_f));
-
-display('starting snapping in 2')
-pause(1);
-display('starting snapping 1')
-pause(1);
-display('starting snapping')
-
 %% 8. MACSing with snapping images º
 M.t0 = clock; % Initial time of the snap series.
 
@@ -93,11 +83,12 @@ fprintf(file_ta, '%s,', t_snaps_i/60);
 t_snaps_i_str = secs2msf(t_snaps_i);
 fprintf(file_tf, '%s,', t_snaps_i_str);
 
-prefix_img = [prefix, t_snaps_i_str, '/'];
-mkdir_message = mkdir(prefix_img);
-
-filename_sf = [prefix_img, t_snaps_i_str, '_snapfriendly.csv'];
-filename_sa = [prefix_img, t_snaps_i_str, '_snapanalysis.csv'];
+prefix_img1 = [prefix1, t_snaps_i_str, '/'];
+prefix_img2 = [prefix2, t_snaps_i_str, '/'];
+mkdir_message = mkdir(prefix_img1);
+mkdir_message = mkdir(prefix_img2);
+filename_sf = [prefix_img1, t_snaps_i_str, '_snapfriendly.csv'];
+filename_sa = [prefix_img1, t_snaps_i_str, '_snapanalysis.csv'];
 
 file_sf = fopen(filename_sf, 'w'); %Times for each snap in a friendly format
 file_sa = fopen(filename_sa, 'w'); %Times for each snap in minutes
@@ -149,19 +140,32 @@ for i=1:N_SNAPS
     
    %  mmc.enableContinuousFocus(1)
       
-    pause(4)
+     pause(1)
     
     %-------------------snap RFP 
     
-    M.imageDir = prefix_img; % change the directory
+    M.imageDir1 = prefix_img1; % change the directory
+    M.imageDir2 = prefix_img2;
+ 
+    for pn = 1:M.totalPositions
+        
+    X_n = M1.position(pn).X{1};
+    Y_n = M1.position(pn).Y{1};
+    mmc.setXYPosition('TIXYDrive', X_n, Y_n)
+    mmc.waitForDevice('TIXYDrive')
+    
     
     %     for i=1:5 % this is for focus adjustment only
     mmc.setProperty('TIFilterBlock1','Label','4-G-2Ec') % Set RED Filter
     mmc.setProperty('TIEpiShutter','State','1') % Open Epi Shutter
-    
-    filename_1 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c1', '.tif'];
-    filename_2 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c2', '.tif'];
-    mmc.setExposure(250); %in ms
+    if pn == 1
+    filename_1 = [M.imageDir1, '/', M.strain, '_t001xy', num2str(i), 'c1', '.tif'];
+    filename_2 = [M.imageDir1, '/', M.strain, '_t001xy', num2str(i), 'c2', '.tif'];
+    else
+    filename_1 = [M.imageDir2, '/', M.strain, '_t001xy', num2str(i), 'c1', '.tif'];
+    filename_2 = [M.imageDir2, '/', M.strain, '_t001xy', num2str(i), 'c2', '.tif'];
+    end
+    mmc.setExposure(400); %in ms
     mmc.snapImage; %acquire a single image
     
     t_rfp_snap = etime(clock, M.t0);
@@ -193,7 +197,11 @@ for i=1:N_SNAPS
     
     mmc.setProperty('TIFilterBlock1','Label','3-B-2Ec') % Set GREEN Filter
     mmc.setProperty('TIEpiShutter','State','1')
-    filename_3 = [M.imageDir, M.strain, '_t001xy', num2str(i), 'c3', '.tif'];
+    if pn == 1
+    filename_3 = [M.imageDir1, '/', M.strain, '_t001xy', num2str(i), 'c3', '.tif'];
+    else
+    filename_3 = [M.imageDir2, '/', M.strain, '_t001xy', num2str(i), 'c3', '.tif'];
+    end
     mmc.setExposure(800); %in ms
     mmc.snapImage; %acquire a single image
     
@@ -213,7 +221,9 @@ for i=1:N_SNAPS
     pause(1)
     mmc.setProperty('TIEpiShutter','State','0') % Close Epi Shutter
     %     end  % this is for focus adjustment only
-   
+    
+    end
+    
     pause(2);
     
 %     %-------------------snap BF
@@ -267,23 +277,15 @@ display('Snaps DONE')
 fclose(file_sf);
 fclose(file_sa);
 
-display('cleaning in 2')
-pause(1);
-display('cleaning in 1')
-pause(1);
-display('starting cleaning')
-
 %% 9. Cleaning protocols 
-% 9a. Cleaning protocol 1 rbs35
+%% 9a. Cleaning protocol 1 rbs35
 ptToW2(T_WASTE_FINAL);
-allOff(); 
+allOff();
 cleanRbs35(N_CLEAN_RBS_35, T_FILL_RBS_35, T_WAIT_RBS_35, T_WASTE_RBS_35);
 % 9b. Cleaning protocol 2 MilliQ
 cleanMilliq(N_CLEAN_MILLIQ, T_FILL_MILLIQ, T_WAIT_MILLIQ, T_WASTE_MILLIQ, T_PT_TO_W2, T_CHIP_CLEANING);
 %% 10. Cleaning protocol 3 Final
-for i=1:2
-    cleanFinal(4, T_W1, T_FILL_GC_TO_PT, 1, T_WASTE_FINAL);
-end
+cleanFinal(N_CLEAN_FINAL, T_W1, T_FILL_GC_TO_PT, T_WAIT_GC_TO_PT, T_WASTE_FINAL);
 %% 11. Close files
 fclose( f_ta );
 fclose( f_tf );
