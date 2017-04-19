@@ -1,0 +1,17 @@
+gcToPt(4);
+allOff();
+%%
+milliq();
+allOff();
+%%
+rbs35(9);
+allOff();
+%%
+ptToW2(15);
+allOff();
+%%
+ptToW2(1.5);
+allOff();
+%%
+gcToW1(10);
+allOff();

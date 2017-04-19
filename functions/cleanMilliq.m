@@ -16,12 +16,18 @@ function cleanMilliq(n, tFill, tWait, tWaste, tptToW2, tChip)
         
     for i=1:n
         milliq(tFill);
-        allOff();
-        pause(tWait);
         ptToW2(tWaste);
         allOff();
         pause(2);
     end
+    
+    milliq(tFill);
+    allOff();
+    pause(tWait);
+    ptToW2(tWaste);
+    allOff();
+    pause(2);
+    
     display('Cleaning MilliQ pt. 1 Done')
     milliq(tFill);
     allOff();

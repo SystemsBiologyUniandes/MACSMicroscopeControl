@@ -14,17 +14,11 @@ function cleanFinal(n, tW1, tFill, tWait, tWaste)
         gcToPt(tFill);
         allOff();
         pause(tWait);
+        ptToChip(tWaste);
         ptToW2(tWaste);
         allOff();
     end
-    for i=1:n
-        gcToPt(tFill);
-        allOff();
-        pause(tWait);
-        ptToChip(tWaste);
-        allOff();
-     end  
-    
+       
     display('Cleaning Final Done')
 end
 
