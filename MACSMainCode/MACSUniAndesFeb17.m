@@ -110,7 +110,7 @@ fprintf(file_sf, '%s\n', s_header{end});
 fprintf(file_sa, '%s,', s_header{1:end-1});
 fprintf(file_sa, '%s\n', s_header{end});
 
-N_SNAPS = 50;
+N_SNAPS = 5;
 for i=1:N_SNAPS
     
     display(['Snap ', num2str(i),' out of ', num2str(N_SNAPS)]) 
@@ -285,5 +285,5 @@ for i=1:2
     cleanFinal(4, T_W1, T_FILL_GC_TO_PT, 1, T_WASTE_FINAL);
 end
 %% 11. Close files
-fclose( f_ta );
-fclose( f_tf );
+fclose( file_ta );
+fclose( file_tf );

@@ -15,7 +15,7 @@ function cleanFinal(n, tW1, tFill, tWait, tWaste)
         allOff();
         pause(tWait/4);
         ptToChip(tWaste);
-        ptToW2(tWaste); %UNCOMMENT THIS WHEN THE W3 TUBING IS CONNECTED  TO THE CHIP OUTPUT OF THE 3 WAY VALVE
+        %ptToW2(tWaste); %UNCOMMENT THIS WHEN THE W3 TUBING IS CONNECTED  TO THE CHIP OUTPUT OF THE 3 WAY VALVE
         allOff();
     end
     
@@ -25,7 +25,7 @@ function cleanFinal(n, tW1, tFill, tWait, tWaste)
     allOff();
     pause(tWait);
     ptToChip(tWaste);
-    ptToW2(tWaste); %UNCOMMENT THIS WHEN THE W3 TUBING IS CONNECTED  TO THE CHIP OUTPUT OF THE 3 WAY VALVE
+    %ptToW2(tWaste); %UNCOMMENT THIS WHEN THE W3 TUBING IS CONNECTED  TO THE CHIP OUTPUT OF THE 3 WAY VALVE
     allOff();
     display('Cleaning Final Done')
 end

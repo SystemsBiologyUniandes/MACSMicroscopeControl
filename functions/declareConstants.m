@@ -20,7 +20,7 @@ T_PT_TO_W2 = 0.7;
 T_CHIP_PRESNAP = 300;
 %% Macsing and snapping
 % Time to send from PT to Chip
-T_PT_TO_CHIP = 2;
+T_PT_TO_CHIP = 10;
 % Time to accumulate cells in the FOV
 T_ACCUMULATING = 4;
 % Time to press the cells (and wait for the first snap)
