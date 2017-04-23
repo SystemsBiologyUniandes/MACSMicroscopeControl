@@ -37,7 +37,7 @@ system_prefix = 'C:/Users/Juan Arias/Desktop/MACS/'; %(Microscope PC)
 
 % Creates directory for the images
 global prefix;
-prefix = [system_prefix, M.user,'/',M.time,'_',M.media, '/', M.strain, '/', 'pos1', '/'];
+prefix = [system_prefix, M.user,'/', M.strain, '/',M.time, '/'];
 
 mkdir_message = mkdir(prefix);
 output_filename = strcat(prefix, 'experimentInfo_',M.time,'_',M.user,'_', M.strain,'.txt');
@@ -51,7 +51,7 @@ fprintf(output_file, output_format, 'cMount',num2str(cMount));
 fprintf(output_file, output_format, 'Camera Pixel Size (um)',num2str(cam_pixel_size));
 fclose(output_file);
 
-open(output_filename);
+%open(output_filename);
 
 % Read the position list
 global M1;

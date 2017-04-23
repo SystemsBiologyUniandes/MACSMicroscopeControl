@@ -13,5 +13,5 @@ function cleanBleach(n, tFill, tWait, tWaste)
         allOff();
         pause(2);
     end
-    display('Cleaning Bleach Done')
+    %display('Cleaning Bleach Done')
 end

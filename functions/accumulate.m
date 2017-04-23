@@ -4,6 +4,6 @@ function accumulate(t)
 %   ACCUMULATE(t) Accumulates for t seconds.
     global macs;
     outputSingleScan(macs,[0 0 0 0,  0 1 1 0,  0 0 0 0]);
-    display('Accumulating');
+    %display('Accumulating');
     pause(t);
 end

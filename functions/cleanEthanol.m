@@ -13,7 +13,7 @@ function cleanEthanol(n, tFill, tWait, tWaste)
         allOff();
         pause(2);
     end
-    display('Cleaning Ethanol Done')
+    %display('Cleaning Ethanol Done')
 end
 
 

@@ -3,6 +3,6 @@ function bleach(t)
 %   BLEACH(t) Sends bleach to PT for t seconds.
     global macs;
     outputSingleScan(macs,[1 0 0 0,  0 0 0 0,  0 0 0 0]);
-    display('Bleach');
+    %display('Bleach');
     pause(t);
 end

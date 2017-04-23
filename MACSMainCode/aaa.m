@@ -1,0 +1,2 @@
+allOff()
+display('Quick allOff');

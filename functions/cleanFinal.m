@@ -7,27 +7,27 @@ function cleanFinal(n, tW1, tFill, tWait, tWaste)
 %       Sends from PT to W2 for a time of tWaste.
 %       Turns all valves off.
 %       Repeats n times.
-
+    display('Cleaning final');
     for i=1:n
+        display(['    Cycle ', num2str(i),' of ',  num2str(n+1)]);
         gcToW1(tW1);
         allOff();
         gcToPt(tFill);
         allOff();
-        pause(tWait/4);
+        pause(tWait/5);
         ptToChip(tWaste);
-        %ptToW2(tWaste); %UNCOMMENT THIS WHEN THE W3 TUBING IS CONNECTED  TO THE CHIP OUTPUT OF THE 3 WAY VALVE
         allOff();
     end
     
+    display(['    Cycle ', num2str(n+1),' of ',  num2str(n+1)]);
     gcToW1(tW1);
     allOff();
     gcToPt(tFill);
     allOff();
     pause(tWait);
     ptToChip(tWaste);
-    %ptToW2(tWaste); %UNCOMMENT THIS WHEN THE W3 TUBING IS CONNECTED  TO THE CHIP OUTPUT OF THE 3 WAY VALVE
     allOff();
-    display('Cleaning Final Done')
+    display('    Cleaning Final Done')
 end
 
 

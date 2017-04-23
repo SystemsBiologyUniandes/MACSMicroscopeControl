@@ -5,6 +5,8 @@
 %   A brief description of the constants is given, for more details see the
 %   documentation of the related function (e.g. cleanMilliq, cleanEthanol, etc.).
 
+%% Measure
+T_MEASURE = 10;
 %% Cleaning  Field Of View (FOV)
 % Number of times the FOV is cleaned
 N_CLEAN_FOV = 8;
@@ -20,17 +22,17 @@ T_PT_TO_W2 = 0.7;
 T_CHIP_PRESNAP = 300;
 %% Macsing and snapping
 % Time to send from PT to Chip
-T_PT_TO_CHIP = 10;
+T_PT_TO_CHIP = 2;
 % Time to accumulate cells in the FOV
 T_ACCUMULATING = 4;
 % Time to press the cells (and wait for the first snap)
-T_MACSING = 4;
+T_MACSING = 8;
 %% Cleaning
 % Number of cleaning steps
 %N_CLEAN_BLEACH = 2;
 N_CLEAN_RBS_35 = 2;
 N_CLEAN_MILLIQ = 2;
-N_CLEAN_FINAL = 4;
+N_CLEAN_FINAL = 8;
 % Time to fill the PT on cleaning steps
 %   By default it is the same for all. This can be changed.
 T_FILL_CLEANING_TO_PT = 5;

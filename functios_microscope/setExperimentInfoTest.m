@@ -1,5 +1,5 @@
-% SETEXPERIMENTINFO Prompt for experiment information.
-%   SETEXPERIMENTINFO Prompt for experiment information and saves it in a
+% SETEXPERIMENTINFOTEST Prompt for experiment information in the test.
+%   SETEXPERIMENTINFOTEST Prompt for experiment information and saves it in a
 %   text file with name and directory defined in output_filename.
 %   experimentInfo_'date'_'user'.txt.
 %   After the user clicks OK, the experiment time starts to count. Keep in
@@ -52,7 +52,7 @@ fprintf(output_file, output_format, 'cMount',num2str(cMount));
 fprintf(output_file, output_format, 'Camera Pixel Size (um)',num2str(cam_pixel_size));
 fclose(output_file);
 
-open(output_filename);
+%open(output_filename);
 
 % Read the position list
 global M1;

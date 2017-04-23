@@ -9,7 +9,7 @@ function macsingSnap(tPtToChip, tAccumulating, tMacsing )
     ptToChip(tPtToChip);
     accumulate(tAccumulating);
     macsing(tMacsing);
-    display('Macsing for Snaps done');
+    %display('Macsing for Snaps done');
 end
 
 
